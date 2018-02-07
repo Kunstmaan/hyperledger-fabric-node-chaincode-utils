@@ -1,0 +1,35 @@
+{
+  "name": "hyperledger-fabric-node-chaincode-utils",
+  "version": "0.1.0",
+  "description": "Utilities for writing Hyperledger Fabric chaincode in node.js",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kunstmaan/hyperledger-fabric-node-chaincode-utils.git"
+  },
+  "keywords": [
+    "chaincode",
+    "hyperledger",
+    "fabric",
+    "node.js"
+  ],
+  "author": "Kunstmaan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kunstmaan/hyperledger-fabric-node-chaincode-utils/issues"
+  },
+  "homepage": "https://github.com/Kunstmaan/hyperledger-fabric-node-chaincode-utils#readme",
+  "dependencies": {
+    "fabric-shim": "git+https://github.com/daanporon/fabric-shim.git",
+    "js-sha3": "^0.7.0",
+    "jsrsasign": "^8.0.5",
+    "lodash": "^4.17.4",
+    "log4js": "^2.5.2"
+  },
+  "devDependencies": {
+    "eslint": "^4.16.0"
+  }
+}
