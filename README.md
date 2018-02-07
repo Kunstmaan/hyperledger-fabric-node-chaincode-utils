@@ -8,3 +8,8 @@ TODO
 
 ## Run tests
  TODO
+
+ ## Roadmap
+
+* Add tests
+* Add stub for testing
