@@ -1,11 +1,11 @@
 
 const {X509} = require('jsrsasign');
-const {sha3_256} = require('js-sha3');
+const {sha3_256} = require('js-sha3'); // eslint-disable-line
 const _ = require('lodash'); // eslint-disable-line
 
 const logger = require('./logger').getLogger('utils/identity');
 
-const ChaincodeError = require('./../ChaincodeError');
+const ChaincodeError = require('./../lib/ChaincodeError');
 const ERRORS = require('./../constants/errors');
 
 const normalizeX509PEM = function(raw) {
@@ -59,5 +59,5 @@ module.exports = {
     normalizeX509PEM,
 
     getPublicKeyHashFromStub,
-    getPublicKeyHashFromPEM,
+    getPublicKeyHashFromPEM
 };

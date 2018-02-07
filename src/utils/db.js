@@ -1,3 +1,4 @@
+const _ = require('lodash'); // eslint-disable-line
 const logger = require('./logger').getLogger('utils/db');
 const normalizePayload = require('./normalizePayload');
 

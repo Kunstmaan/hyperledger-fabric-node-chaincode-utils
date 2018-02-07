@@ -7,4 +7,4 @@ module.exports = {
     'UNKNOWN_ERROR': 'unknown_error',
 
     'CHAINCODE_INVOKE_ERROR': 'chaincode_invoke_error'
-}
+};

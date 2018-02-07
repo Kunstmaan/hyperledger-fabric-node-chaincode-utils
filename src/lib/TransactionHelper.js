@@ -94,7 +94,7 @@ const TransactionHelper = class {
             // is released when another chaincode is invoked before.
             // @ref https://jira.hyperledger.org/browse/FAB-7437
             setTimeout(async () => {
-                const invokeChannel = channelRaw || this.stub.getChannelID();
+                const invokeChannel = channel || this.stub.getChannelID();
 
                 try {
                     const invokeResult = await this.stub.invokeChaincode(chaincodeName, invokeArgs, invokeChannel);
@@ -117,7 +117,7 @@ const TransactionHelper = class {
                     if (error instanceof ChaincodeError) {
                         ccError = error;
                     } else {
-                        this.logger.error(`Error while calling ${chaincodeName} with args ${args} on channel ${channelRaw}`);
+                        this.logger.error(`Error while calling ${chaincodeName} with args ${args} on channel ${invokeChannel}`);
 
                         const errorData = parseErrorMessage(error.message);
                         if (_.isUndefined(errorData.key)) {
@@ -223,7 +223,7 @@ const TransactionHelper = class {
     }
 
     async getStateAsDate(key) {
-        validateKey(key);
+        validateRequiredString({key});
 
         const rawValue = await this.stub.getState(key);
 
@@ -273,15 +273,15 @@ function validate(params, validator, expected) {
     for (const paramName in params) {
         if ({}.hasOwnProperty.call(params, paramName)) {
             const paramValue = params[paramName];
-        }
 
-        if (!validator(paramValue)) {
+            if (!validator(paramValue)) {
 
-            throw new ChaincodeError(ERRORS.TYPE_ERROR, {
-                'arg': paramName,
-                'value': paramValue,
-                'expected': expected
-            });
+                throw new ChaincodeError(ERRORS.TYPE_ERROR, {
+                    'arg': paramName,
+                    'value': paramValue,
+                    'expected': expected
+                });
+            }
         }
     }
 }

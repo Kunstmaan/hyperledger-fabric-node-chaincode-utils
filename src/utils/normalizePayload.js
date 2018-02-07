@@ -22,4 +22,4 @@ module.exports = function normalizePayload(value) {
     }
 
     return value;
-}
+};
