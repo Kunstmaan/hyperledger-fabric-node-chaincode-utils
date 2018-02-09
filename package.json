@@ -1,5 +1,5 @@
 {
-  "name": "hyperledger-fabric-node-chaincode-utils",
+  "name": "@kunstmaan/hyperledger-fabric-node-chaincode-utils",
   "version": "0.1.0",
   "description": "Utilities for writing Hyperledger Fabric chaincode in node.js",
   "main": "./src/index.js",
