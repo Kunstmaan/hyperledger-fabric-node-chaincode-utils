@@ -18,27 +18,43 @@ class ChaincodeBase {
         this.logger = loggerUtils.getLogger(`chaincode/${this.name}`);
     }
 
+    /**
+     * @returns the name of the current chaincode.
+     */
     get name() {
 
         return this.constructor.name;
     }
 
+    /**
+     * @returns the path where the migrations can be found for the current chaincode.
+     */
     get migrationsPath() {
 
         throw new ChaincodeError(ERRORS.MIGRATION_PATH_NOT_DEFINED);
     }
 
+    /**
+     * @returns the transaction helper for the given stub. This can be used to extend
+     * the Default TransactionHelper with extra functionality and return your own instance.
+     */
     getTransactionHelperFor(stub) {
 
         return new TransactionHelper(stub);
     }
 
+    /**
+     * Called when Instantiating chaincode
+     */
     async Init() {
         this.logger.info(`=========== Instantiated Chaincode ${this.name} ===========`);
 
         return shim.success();
     }
 
+    /**
+     * Basic implementation that redirects Invocations to the right functions on this instance
+     */
     async Invoke(stub) {
         try {
             this.logger.info(`=========== Invoked Chaincode ${this.name} ===========`);
@@ -81,6 +97,13 @@ class ChaincodeBase {
         }
     }
 
+    /**
+     * Run Migrations for the current chaincode.
+     *
+     * @param {Stub} stub
+     * @param {TransactionHelper} txHelper
+     * @param {Array} args
+     */
     async runMigrations(stub, txHelper, ...args) {
         this.migrating = true;
         const result = await migrations.runMigrations(this.migrationsPath, this, stub, txHelper, args);
@@ -89,6 +112,9 @@ class ChaincodeBase {
         return result;
     }
 
+    /**
+     * Returns 'pong' when everything is correct.
+     */
     async ping() {
 
         return 'pong';

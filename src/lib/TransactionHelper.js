@@ -33,6 +33,7 @@ const TransactionHelper = class {
 
     /**
      * Generate a new DB Key for the given prefix.
+     *
      * @param {String} prefix
      */
     newDBKey(prefix) {
@@ -66,7 +67,8 @@ const TransactionHelper = class {
     }
 
     /**
-     * Invoke the given function on the given chaincode by passing the given arguments
+     * A helper function around the invokeChaincode of the stub that will throw a ChaincodeError
+     * if the invocation failed or return the parsed result when it succeeded.
      *
      * @param {String} chaincodeName
      * @param {String} functionName
@@ -200,12 +202,22 @@ const TransactionHelper = class {
         return Promise.all(allResults.map((record) => this.stub.deleteState(record.key)));
     }
 
+    /**
+     * Serializes the value and store it on the state db.
+     *
+     * @param {String} key
+     */
     async putState(key, value) {
         validateRequiredString({key});
 
         return this.stub.putState(key, dbUtils.serialize(value));
     }
 
+    /**
+     * @param {String} key
+     *
+     * @returns the state for the given key parsed as an Object
+     */
     async getStateAsObject(key) {
         validateRequiredString({key});
 
@@ -214,6 +226,11 @@ const TransactionHelper = class {
         return dbUtils.toObject(rawValue);
     }
 
+    /**
+     * @param {String} key
+     *
+     * @returns the state for the given key parsed as a String
+     */
     async getStateAsString(key) {
         validateRequiredString({key});
 
@@ -222,6 +239,11 @@ const TransactionHelper = class {
         return dbUtils.toString(rawValue);
     }
 
+    /**
+     * @param {String} key
+     *
+     * @returns the state for the given key parsed as a Date
+     */
     async getStateAsDate(key) {
         validateRequiredString({key});
 
@@ -230,6 +252,9 @@ const TransactionHelper = class {
         return dbUtils.toDate(rawValue);
     }
 
+    /**
+     * @return the Transaction date as a Javascript Date Object.
+     */
     getTxDate() {
         const timestamp = this.stub.getTxTimestamp();
         const milliseconds = (timestamp.seconds.low + ((timestamp.nanos / 1000000) / 1000)) * 1000;
@@ -237,11 +262,20 @@ const TransactionHelper = class {
         return new Date(milliseconds);
     }
 
+    /**
+     * Returns the Public Key from the Transaction creator as a SHA3 256 Hash
+     */
     getCreatorPublicKey() {
 
         return identityUtils.getPublicKeyHashFromStub(this.stub);
     }
 
+    /**
+     * Publish an event to the Blockchain
+     *
+     * @param {String} name
+     * @param {Object} payload
+     */
     setEvent(name, payload) {
         let bufferedPayload;
 
