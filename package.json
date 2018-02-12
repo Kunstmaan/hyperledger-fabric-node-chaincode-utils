@@ -17,7 +17,7 @@
     "node.js"
   ],
   "author": "Kunstmaan",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Kunstmaan/hyperledger-fabric-node-chaincode-utils/issues"
   },
