@@ -3,7 +3,7 @@ const log4js = require('log4js');
 /**
  * @param {String} name
  *
- * @returns a log4j logger object prefixed with the given name.
+ * @return a log4j logger object prefixed with the given name.
  */
 module.exports.getLogger = function(name) {
     const logger = log4js.getLogger(`chaincode-utils/${name}`);

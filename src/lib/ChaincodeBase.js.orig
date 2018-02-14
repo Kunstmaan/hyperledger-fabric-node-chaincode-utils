@@ -44,6 +44,34 @@ class ChaincodeBase {
     }
 
     /**
+<<<<<<< Updated upstream
+=======
+     * @param {Array} params
+     * @return the parsed parameters
+     */
+    parseParameters(params) {
+        const parsedParams = [];
+
+        params.forEach((param) => {
+            if (typeof param === 'string') {
+                try {
+                    // try to parse ...
+                    parsedParams.push(JSON.parse(param));
+                } catch (err) {
+                    // if it fails fall back to original param
+                    this.logger.error(`failed to parse param ${param}`);
+                    parsedParams.push(param);
+                }
+            } else {
+                parsedParams.push(param);
+            }
+        });
+
+        return parsedParams;
+    }
+
+    /**
+>>>>>>> Stashed changes
      * Called when Instantiating chaincode
      */
     async Init() {

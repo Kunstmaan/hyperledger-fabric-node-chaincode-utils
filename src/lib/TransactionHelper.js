@@ -32,11 +32,11 @@ const TransactionHelper = class {
     }
 
     /**
-     * Generate a new DB Key for the given prefix.
+     * Generate a UUID for the given prefix.
      *
      * @param {String} prefix
      */
-    newDBKey(prefix) {
+    uuid(prefix) {
         const txId = this.stub.getTxID();
         const txTimestamp = this.getTxDate().getTime();
 
@@ -216,7 +216,7 @@ const TransactionHelper = class {
     /**
      * @param {String} key
      *
-     * @returns the state for the given key parsed as an Object
+     * @return the state for the given key parsed as an Object
      */
     async getStateAsObject(key) {
         validateRequiredString({key});
@@ -229,7 +229,7 @@ const TransactionHelper = class {
     /**
      * @param {String} key
      *
-     * @returns the state for the given key parsed as a String
+     * @return the state for the given key parsed as a String
      */
     async getStateAsString(key) {
         validateRequiredString({key});
@@ -242,7 +242,7 @@ const TransactionHelper = class {
     /**
      * @param {String} key
      *
-     * @returns the state for the given key parsed as a Date
+     * @return the state for the given key parsed as a Date
      */
     async getStateAsDate(key) {
         validateRequiredString({key});
