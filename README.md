@@ -59,12 +59,12 @@ The TransactionHelper is a wrapper class around the stub class of Hyperledger Fa
 const txHelper = new TransactionHelper(stub)
 ```
 
-#### Create new DB Key
+#### UUID
 
 ```javascript
-txHelper.newDBKey('FOO');
+txHelper.uuid('FOO');
 -> FOO_5b8460e25e1892ceaf658b3e41d06a9933831806cbbd5fc49ccfbccda4d8bbaa_0
-txHelper.newDBKey('FOO');
+txHelper.uuid('FOO');
 -> FOO_5b8460e25e1892ceaf658b3e41d06a9933831806cbbd5fc49ccfbccda4d8bbaa_1
 ```
 

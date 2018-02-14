@@ -11,7 +11,7 @@ class ChaincodeStub {
     /**
      * Returns the arguments as array of strings from the chaincode invocation request.
      * Equivalent to [getStringArgs()]{@link ChaincodeStub#getStringArgs}
-     * @returns {string[]}
+     * @return {string[]}
      */
     getArgs() {
         return this.middleware('getArgs');
@@ -19,7 +19,7 @@ class ChaincodeStub {
 
     /**
      * Returns the arguments as array of strings from the chaincode invocation request
-     * @returns {string[]}
+     * @return {string[]}
      */
     getStringArgs() {
         return this.middleware('getStringArgs');
@@ -35,7 +35,7 @@ class ChaincodeStub {
     /**
      * Returns an object containing the chaincode function name to invoke, and the array
      * of arguments to pass to the target function
-     * @returns {FunctionAndParameters}
+     * @return {FunctionAndParameters}
      */
     getFunctionAndParameters() {
         return this.middleware('getFunctionAndParameters');
@@ -69,7 +69,7 @@ class ChaincodeStub {
 
     /**
      * Returns the identity object of the chaincode invocation's submitter
-     * @returns {ProposalCreator}
+     * @return {ProposalCreator}
      */
     getCreator() {
         return this.middleware('getCreator');
@@ -78,7 +78,7 @@ class ChaincodeStub {
     /**
      * Returns the transient map that can be used by the chaincode but not
      * saved in the ledger, such as cryptographic information for encryption and decryption
-     * @returns {Map<string:Buffer>}
+     * @return {Map<string:Buffer>}
      */
     getTransient() {
         return this.middleware('getTransient');
@@ -148,7 +148,7 @@ class ChaincodeStub {
 
     /**
      * Returns a fully decoded object of the signed transaction proposal
-     * @returns {SignedProposal}
+     * @return {SignedProposal}
      */
     getSignedProposal() {
         return this.middleware('getSignedProposal');
@@ -189,7 +189,7 @@ class ChaincodeStub {
      * the proposal payload and the binding string concatenated together, namely <code>sigma=Sign(BobSigningKey, tx.Payload||tx.Binding)</code>,
      * it's guaranteed to be unique and can not be re-used in a different transaction for exploitation.<br><br>
      *
-     * @returns {string} A HEX-encoded string of SHA256 hash of the transaction's nonce, creator and epoch concatenated
+     * @return {string} A HEX-encoded string of SHA256 hash of the transaction's nonce, creator and epoch concatenated
      */
     getBinding() {
         return this.middleware('getBinding');
@@ -199,7 +199,7 @@ class ChaincodeStub {
      * Retrieves the current value of the state variable <code>key</code>
      * @async
      * @param {string} key State variable key to retrieve from the state store
-     * @returns {Promise} Promise for the current value of the state variable
+     * @return {Promise} Promise for the current value of the state variable
      */
     async getState(key) {
         return this.middleware('getState', {key});
@@ -212,7 +212,7 @@ class ChaincodeStub {
      * @async
      * @param {string} key State variable key to set the value for
      * @param {byte[]} value State variable value
-     * @returns {Promise} Promise will be resolved when the peer has successfully handled the state update request
+     * @return {Promise} Promise will be resolved when the peer has successfully handled the state update request
      * or rejected if any errors
      */
     async putState(key, value) {
@@ -223,7 +223,7 @@ class ChaincodeStub {
      * Deletes the state variable <code>key</code> from the state store.
      * @async
      * @param {string} key State variable key to delete from the state store
-     * @returns {Promise} Promise will be resolved when the peer has successfully handled the state delete request
+     * @return {Promise} Promise will be resolved when the peer has successfully handled the state delete request
      * or rejected if any errors
      */
     async deleteState(key) {
@@ -243,7 +243,7 @@ class ChaincodeStub {
      * @async
      * @param {string} startKey State variable key as the start of the key range (inclusive)
      * @param {string} endKey State variable key as the end of the key range (exclusive)
-     * @returns {Promise} Promise for a {@link StateQueryIterator} object
+     * @return {Promise} Promise for a {@link StateQueryIterator} object
      */
     async getStateByRange(startKey, endKey) {
         return this.middleware('getStateByRange', {startKey, endKey});
@@ -263,7 +263,7 @@ class ChaincodeStub {
      * ledger, and should limit use to read-only chaincode operations.
      * @async
      * @param {string} query Query string native to the underlying state database
-     * @returns {Promise} Promise for a {@link StateQueryIterator} object
+     * @return {Promise} Promise for a {@link StateQueryIterator} object
      */
     async getQueryResult(query) {
         return this.middleware('getQueryResult', {query});
@@ -284,7 +284,7 @@ class ChaincodeStub {
      * update ledger, and should limit use to read-only chaincode operations.
      * @async
      * @param {string} key The state variable key
-     * @returns {Promise} Promise for a {@link HistoryQueryIterator} object
+     * @return {Promise} Promise for a {@link HistoryQueryIterator} object
      */
     async getHistoryForKey(key) {
         return this.middleware('getHistoryForKey', {key});
@@ -317,7 +317,7 @@ class ChaincodeStub {
      * @param {string} chaincodeName Name of the chaincode to call
      * @param {byte[][]} args List of arguments to pass to the called chaincode
      * @param {string} channel Name of the channel where the target chaincode is active
-     * @returns {Promise} Promise for a {@link Response} object returned by the called chaincode
+     * @return {Promise} Promise for a {@link Response} object returned by the called chaincode
      */
     async invokeChaincode(chaincodeName, args, channel) {
         return this.middleware('invokeChaincode', {chaincodeName, args, channel});
