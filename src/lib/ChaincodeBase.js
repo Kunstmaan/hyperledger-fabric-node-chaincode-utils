@@ -44,6 +44,27 @@ class ChaincodeBase {
     }
 
     /**
+     * @param {Array} params
+     * @returns the parsed parameters
+     */
+    parseParameters(params) {
+        const parsedParams = [];
+
+        params.forEach((param) => {
+            try {
+                // try to parse ...
+                parsedParams.push(JSON.parse(param));
+            } catch (err) {
+                // if it fails fall back to original param
+                this.logger.error(`failed to parse param ${param}`);
+                parsedParams.push(param);
+            }
+        });
+
+        return parsedParams;
+    }
+
+    /**
      * Called when Instantiating chaincode
      */
     async Init() {
@@ -73,7 +94,16 @@ class ChaincodeBase {
                 }).serialized);
             }
 
-            let payload = await method.call(this, stub, this.getTransactionHelperFor(stub), ...ret.params);
+            let parsedParameters;
+            try {
+                parsedParameters = this.parseParameters(ret.params);
+            } catch (err) {
+                new ChaincodeError(ERRORS.PARSING_PARAMETERS_ERROR, {
+                    'message': err.message
+                });
+            }
+
+            let payload = await method.call(this, stub, this.getTransactionHelperFor(stub), ...parsedParameters);
 
             if (!Buffer.isBuffer(payload)) {
                 payload = Buffer.from(JSON.stringify(normalizePayload(payload)));
