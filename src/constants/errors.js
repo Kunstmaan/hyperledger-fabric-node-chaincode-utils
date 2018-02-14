@@ -6,5 +6,6 @@ module.exports = {
     'UNKNOWN_FUNCTION': 'unknown_function',
     'UNKNOWN_ERROR': 'unknown_error',
 
+    'PARSING_PARAMETERS_ERROR': 'parsing_parameters_error',
     'CHAINCODE_INVOKE_ERROR': 'chaincode_invoke_error'
 };
