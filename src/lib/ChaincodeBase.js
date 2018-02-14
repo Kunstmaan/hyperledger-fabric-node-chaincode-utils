@@ -98,7 +98,7 @@ class ChaincodeBase {
             try {
                 parsedParameters = this.parseParameters(ret.params);
             } catch (err) {
-                new ChaincodeError(ERRORS.PARSING_PARAMETERS_ERROR, {
+                throw new ChaincodeError(ERRORS.PARSING_PARAMETERS_ERROR, {
                     'message': err.message
                 });
             }
