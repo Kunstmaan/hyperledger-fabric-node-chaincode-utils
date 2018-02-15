@@ -37,6 +37,8 @@ const TransactionHelper = class {
      * @param {String} prefix
      */
     uuid(prefix) {
+        validateRequiredString({prefix});
+
         const txId = this.stub.getTxID();
         const txTimestamp = this.getTxDate().getTime();
 
