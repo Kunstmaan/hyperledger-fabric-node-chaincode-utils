@@ -1,7 +1,7 @@
 
+const _ = require('lodash'); // eslint-disable-line
 const {X509} = require('jsrsasign');
 const {sha3_256} = require('js-sha3'); // eslint-disable-line
-const _ = require('lodash'); // eslint-disable-line
 
 const logger = require('./logger').getLogger('utils/identity');
 
@@ -55,8 +55,31 @@ const getPublicKeyHashFromStub = function(stub) {
     return getPublicKeyHashFromPEM(idBytes.toString());
 };
 
+const validatePublicKeyHash = function(hash) {
+    if (!_.isString(hash)) {
+
+        return false;
+    }
+
+    // sha3_256 = 32 bytes long
+    if (hash.length !== 64) {
+
+        return false;
+    }
+
+    // check for hexadecimal signs
+    if (!/^(\d|[A-F]|[a-f])+$/.test(hash)) {
+
+        return false;
+    }
+
+    return true;
+};
+
 module.exports = {
     normalizeX509PEM,
+
+    validatePublicKeyHash,
 
     getPublicKeyHashFromStub,
     getPublicKeyHashFromPEM
