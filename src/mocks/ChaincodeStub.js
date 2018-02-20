@@ -4,6 +4,7 @@
  * The stub encapsulates the APIs between the chaincode implementation and the Fabric peer
  */
 class ChaincodeStub {
+
     constructor(middleware) {
         this.middleware = middleware;
     }

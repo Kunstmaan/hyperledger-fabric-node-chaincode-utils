@@ -22,7 +22,7 @@ async function runMigrations(migrationsDir, contract, stub, txHelper, args) {
         await migrate(contract, stub, txHelper, args);
     }
 
-    txHelper.putState(MIGRATION_STATE_KEY, Date.now());
+    txHelper.putState(MIGRATION_STATE_KEY, txHelper.getTxDate());
 
     return migrationFiles;
 }
