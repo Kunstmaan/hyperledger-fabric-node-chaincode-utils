@@ -33,12 +33,22 @@ const normalizeX509PEM = function(raw) {
     return `${matches.join('\n')}\n`;
 };
 
-const getPublicKeyHashFromPEM = function(pem) {
+const getCertificateFromPEM = function(pem) {
     const normalizedPEM = normalizeX509PEM(pem);
 
     const cert = new X509();
     cert.readCertPEM(normalizedPEM);
 
+    return cert;
+};
+
+const getCertificateFromStub = function(stub) {
+
+    return getCertificateFromPEM(getPEMFromStub(stub));
+};
+
+const getPublicKeyHashFromPEM = function(pem) {
+    const cert = getCertificateFromPEM(pem);
     const publicKey = cert.getPublicKeyHex();
     const publicKeyHash = sha3_256(publicKey);
 
@@ -49,10 +59,8 @@ const getPublicKeyHashFromPEM = function(pem) {
 };
 
 const getPublicKeyHashFromStub = function(stub) {
-    const signingId = stub.getCreator();
-    const idBytes = signingId.getIdBytes().toBuffer();
 
-    return getPublicKeyHashFromPEM(idBytes.toString());
+    return getPublicKeyHashFromPEM(getPEMFromStub(stub));
 };
 
 const validatePublicKeyHash = function(hash) {
@@ -81,6 +89,16 @@ module.exports = {
 
     validatePublicKeyHash,
 
+    getCertificateFromStub,
+    getCertificateFromPEM,
+
     getPublicKeyHashFromStub,
     getPublicKeyHashFromPEM
 };
+
+function getPEMFromStub(stub) {
+    const signingId = stub.getCreator();
+    const idBytes = signingId.getIdBytes().toBuffer();
+
+    return idBytes.toString();
+}

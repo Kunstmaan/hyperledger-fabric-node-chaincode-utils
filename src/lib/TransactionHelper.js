@@ -265,6 +265,14 @@ const TransactionHelper = class {
     }
 
     /**
+     * Returns the Certificate from the Transaction creator
+     */
+    getCreatorCertificate() {
+
+        return identityUtils.getCertificateFromStub(this.stub);
+    }
+
+    /**
      * Returns the Public Key from the Transaction creator as a SHA3 256 Hash
      */
     getCreatorPublicKey() {
