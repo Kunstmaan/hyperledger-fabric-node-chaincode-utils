@@ -62,9 +62,10 @@ const toString = (buffer) => {
  *   - record: the value associated to that key in the database,
  *           according to the query
  *   @param {StateQueryIterator} iterator the query iterator
+ *   @param {returnTimestamps} boolean return a timestamp field for each item
  *   @return {Array[Object]} an array with the result of the query
  */
-const iteratorToList = async function iteratorToList(iterator) {
+const iteratorToList = async function iteratorToList(iterator, returnTimestamps = false) {
     const allResults = [];
     let res;
     while (res == null || !res.done) {
@@ -80,6 +81,11 @@ const iteratorToList = async function iteratorToList(iterator) {
                 logger.debug(err);
                 jsonRes.record = res.value.value.toString('utf8');
             }
+
+            if (returnTimestamps && res.value.timestamp) {
+                jsonRes.timestamp = new Date(res.value.timestamp.seconds.low * 1000).toISOString();
+            }
+
             allResults.push(jsonRes);
         }
     }

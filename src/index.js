@@ -6,6 +6,7 @@ const logger = require('./utils/logger');
 const normalizePayload = require('./utils/normalizePayload');
 const identity = require('./utils/identity');
 const migrations = require('./utils/migrations');
+const db = require('./utils/db')
 
 module.exports = {
     ChaincodeBase,
@@ -15,6 +16,7 @@ module.exports = {
         logger,
         normalizePayload,
         identity,
-        migrations
+        migrations,
+        db
     }
 };
