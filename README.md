@@ -10,8 +10,17 @@ This Library exposes 2 main classes and some useful utilities.
 
 ChaincodeBase is a super class that can be used for all your Node.js chaincode. It has a default implementation for `Invoke` that catches the transaction and redirect it to the right function with parameter on the Chaincode class. It also reads the respond from the function and wraps it into a `shim.error()` when an error was thrown or a `shim.success()` when a regular object was returned from the function. By extending this class you don't need to worry anymore about the Chaincode details.
 
+To allow using the same version of `fabric-shim` into your chaincode you'll need to provide the shim as an argument in the contructor. To ensure compatibility `fabric-shim` is set as a peer dependency in the package.json.
+
+
 ```javascript
+const shim = require('fabric-shim');
+
 const FooChaincode = class extends ChaincodeBase {
+
+    constructor() {
+        super(shim);
+    }
 
     async yourFunction(stub, txHelper, param1, param2) {
 

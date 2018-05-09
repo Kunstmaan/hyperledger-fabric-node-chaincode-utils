@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/Kunstmaan/hyperledger-fabric-node-chaincode-utils#readme",
   "dependencies": {
-    "fabric-shim": "git+https://github.com/daanporon/fabric-shim.git",
     "grpc": "^1.8.4",
     "js-sha3": "^0.7.0",
     "jsrsasign": "^8.0.5",
@@ -35,5 +34,8 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jest": "^21.7.0"
+  },
+  "peerDependencies": {
+    "fabric-shim": "^1.1.2"
   }
 }
