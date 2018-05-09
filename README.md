@@ -1,4 +1,4 @@
-# Hyperledger Fabric Node.js Chaincode utils [![npm version](https://badge.fury.io/js/%40kunstmaan%2Fhyperledger-fabric-node-chaincode-utils.svg)](https://badge.fury.io/js/%40kunstmaan%2Fhyperledger-fabric-node-chaincode-utils)
+# Hyperledger Fabric Node.js Chaincode utils [![npm version](https://badge.fury.io/js/%40kunstmaan%2Fhyperledger-fabric-node-chaincode-utils.svg)](https://badge.fury.io/js/%40kunstmaan%2Fhyperledger-fabric-node-chaincode-utils) [![Build Status](https://travis-ci.org/Kunstmaan/hyperledger-fabric-node-chaincode-utils.svg?branch=master)](https://travis-ci.org/Kunstmaan/hyperledger-fabric-node-chaincode-utils)
 
 This repository consists out of a set of utilities functions which can be used to create Node.js chaincode on a Fabric blockchain network. Node.js chaincode is only supported since Hyperledger Fabric 1.1.0.
 
