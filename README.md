@@ -1,4 +1,4 @@
-# Hyperledger Fabric Node.js Chaincode utils [![npm version](https://badge.fury.io/js/%40kunstmaan%2Fhyperledger-fabric-node-chaincode-utils.svg)](https://badge.fury.io/js/%40kunstmaan%2Fhyperledger-fabric-node-chaincode-utils)
+# Hyperledger Fabric Node.js Chaincode utils [![npm version](https://badge.fury.io/js/%40kunstmaan%2Fhyperledger-fabric-node-chaincode-utils.svg)](https://badge.fury.io/js/%40kunstmaan%2Fhyperledger-fabric-node-chaincode-utils) [![Build Status](https://travis-ci.org/Kunstmaan/hyperledger-fabric-node-chaincode-utils.svg?branch=master)](https://travis-ci.org/Kunstmaan/hyperledger-fabric-node-chaincode-utils)
 
 This repository consists out of a set of utilities functions which can be used to create Node.js chaincode on a Fabric blockchain network. Node.js chaincode is only supported since Hyperledger Fabric 1.1.0.
 
@@ -10,8 +10,17 @@ This Library exposes 2 main classes and some useful utilities.
 
 ChaincodeBase is a super class that can be used for all your Node.js chaincode. It has a default implementation for `Invoke` that catches the transaction and redirect it to the right function with parameter on the Chaincode class. It also reads the respond from the function and wraps it into a `shim.error()` when an error was thrown or a `shim.success()` when a regular object was returned from the function. By extending this class you don't need to worry anymore about the Chaincode details.
 
+An instance of `fabric-shim` needs to be passed as an argument on the constructor. This is required to ensure that both the chaincode as the `ChaincodeBase` use the same version.
+To ensure compatibility `fabric-shim` is set as a peer dependency of this package.
+
 ```javascript
+const shim = require('fabric-shim');
+
 const FooChaincode = class extends ChaincodeBase {
+
+    constructor() {
+        super(shim);
+    }
 
     async yourFunction(stub, txHelper, param1, param2) {
 
@@ -178,3 +187,11 @@ migrations.runMigrations(migrationsDir, contract, stub, txHelper, args);
 ```
 
 Exposes the function used to run the migrations. It also exposes the key `MIGRATION_STATE_KEY` on which the date is stored when the last migrations where run.
+
+#### Db
+
+```javascript
+const {db} = require('@kunstmaan/hyperledger-fabric-node-chaincode-utils').utils;
+// Converts a db query result into an array of objects
+db.iteratorToList(queryIterator);
+```

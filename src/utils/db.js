@@ -1,6 +1,7 @@
 const _ = require('lodash'); // eslint-disable-line
 const logger = require('./logger').getLogger('utils/db');
 const normalizePayload = require('./normalizePayload');
+const {toDate: timestampToDate} = require('./timestamp');
 
 const serialize = (value) => {
     if (_.isDate(value) || _.isString(value)) {
@@ -80,6 +81,11 @@ const iteratorToList = async function iteratorToList(iterator) {
                 logger.debug(err);
                 jsonRes.record = res.value.value.toString('utf8');
             }
+
+            if (res.value.timestamp) {
+                jsonRes.lastModifiedOn = timestampToDate(res.value.timestamp);
+            }
+
             allResults.push(jsonRes);
         }
     }

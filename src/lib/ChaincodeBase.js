@@ -1,7 +1,5 @@
 const util = require('util');
 
-const shim = require('fabric-shim');
-
 const ChaincodeError = require('./ChaincodeError');
 const TransactionHelper = require('./TransactionHelper');
 
@@ -13,7 +11,8 @@ const ERRORS = require('./../constants/errors');
 
 class ChaincodeBase {
 
-    constructor() {
+    constructor(shim) {
+        this.shim = shim;
         this.migrating = false;
         this.logger = loggerUtils.getLogger(`chaincode/${this.name}`);
     }
@@ -70,7 +69,7 @@ class ChaincodeBase {
     async Init() {
         this.logger.info(`=========== Instantiated Chaincode ${this.name} ===========`);
 
-        return shim.success();
+        return this.shim.success();
     }
 
     /**
@@ -89,7 +88,7 @@ class ChaincodeBase {
             if (!method) {
                 this.logger.error(`Unknown function ${ret.fcn}.`);
 
-                return shim.error(new ChaincodeError(ERRORS.UNKNOWN_FUNCTION, {
+                return this.shim.error(new ChaincodeError(ERRORS.UNKNOWN_FUNCTION, {
                     'fn': ret.fcn
                 }).serialized);
             }
@@ -106,10 +105,10 @@ class ChaincodeBase {
             let payload = await method.call(this, stub, this.getTransactionHelperFor(stub), ...parsedParameters);
 
             if (!Buffer.isBuffer(payload)) {
-                payload = Buffer.from(JSON.stringify(normalizePayload(payload)));
+                payload = Buffer.from(payload ? JSON.stringify(normalizePayload(payload)) : '');
             }
 
-            return shim.success(payload);
+            return this.shim.success(payload);
         } catch (err) {
             let error = err;
 
@@ -123,7 +122,7 @@ class ChaincodeBase {
             this.logger.error(stacktrace);
             this.logger.error(`Data of error ${err.message}: ${JSON.stringify(err.data)}`);
 
-            return shim.error(error.serialized);
+            return this.shim.error(error.serialized);
         }
     }
 
