@@ -194,6 +194,4 @@ Exposes the function used to run the migrations. It also exposes the key `MIGRAT
 const {db} = require('@kunstmaan/hyperledger-fabric-node-chaincode-utils').utils;
 // Converts a db query result into an array of objects
 db.iteratorToList(queryIterator);
-// Converts a db query result into an array of objects (with the timestamp of the transaction)
-db.iteratorToList(queryIterator, true);
 ```

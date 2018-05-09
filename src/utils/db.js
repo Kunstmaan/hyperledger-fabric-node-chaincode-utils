@@ -1,6 +1,7 @@
 const _ = require('lodash'); // eslint-disable-line
 const logger = require('./logger').getLogger('utils/db');
 const normalizePayload = require('./normalizePayload');
+const {toDate: timestampToDate} = require('./timestamp');
 
 const serialize = (value) => {
     if (_.isDate(value) || _.isString(value)) {
@@ -62,10 +63,9 @@ const toString = (buffer) => {
  *   - record: the value associated to that key in the database,
  *           according to the query
  *   @param {StateQueryIterator} iterator the query iterator
- *   @param {returnTimestamps} boolean return a timestamp field for each item
  *   @return {Array[Object]} an array with the result of the query
  */
-const iteratorToList = async function iteratorToList(iterator, returnTimestamps = false) {
+const iteratorToList = async function iteratorToList(iterator) {
     const allResults = [];
     let res;
     while (res == null || !res.done) {
@@ -82,8 +82,8 @@ const iteratorToList = async function iteratorToList(iterator, returnTimestamps 
                 jsonRes.record = res.value.value.toString('utf8');
             }
 
-            if (returnTimestamps && res.value.timestamp) {
-                jsonRes.timestamp = res.value.timestamp;
+            if (res.value.timestamp) {
+                jsonRes.lastModifiedOn = timestampToDate(res.value.timestamp);
             }
 
             allResults.push(jsonRes);

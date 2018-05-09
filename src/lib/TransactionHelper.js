@@ -10,6 +10,7 @@ const loggerUtils = require('./../utils/logger');
 const dbUtils = require('./../utils/db');
 const identityUtils = require('./../utils/identity');
 const parseErrorMessage = require('./../utils/parseErrorMessage');
+const {toDate} = require('./../utils/timestamp');
 
 const chaincodeProto = grpc.load({
     root: path.join(process.cwd(), 'node_modules/fabric-shim/lib/protos'),
@@ -259,9 +260,7 @@ const TransactionHelper = class {
      */
     getTxDate() {
         const timestamp = this.stub.getTxTimestamp();
-        const milliseconds = (timestamp.seconds.low + ((timestamp.nanos / 1000000) / 1000)) * 1000;
-
-        return new Date(milliseconds);
+        return toDate(timestamp);
     }
 
     /**
