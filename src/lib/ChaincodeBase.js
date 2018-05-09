@@ -12,7 +12,7 @@ const ERRORS = require('./../constants/errors');
 class ChaincodeBase {
 
     constructor(shim) {
-        this.shim = shim
+        this.shim = shim;
         this.migrating = false;
         this.logger = loggerUtils.getLogger(`chaincode/${this.name}`);
     }
@@ -108,7 +108,7 @@ class ChaincodeBase {
                 payload = Buffer.from(JSON.stringify(normalizePayload(payload)));
             }
 
-            return shim.success(payload);
+            return this.shim.success(payload);
         } catch (err) {
             let error = err;
 

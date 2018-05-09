@@ -83,7 +83,7 @@ const iteratorToList = async function iteratorToList(iterator, returnTimestamps 
             }
 
             if (returnTimestamps && res.value.timestamp) {
-                jsonRes.timestamp = new Date(res.value.timestamp.seconds.low * 1000).toISOString();
+                jsonRes.timestamp = res.value.timestamp;
             }
 
             allResults.push(jsonRes);

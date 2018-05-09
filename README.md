@@ -12,7 +12,6 @@ ChaincodeBase is a super class that can be used for all your Node.js chaincode. 
 
 To allow using the same version of `fabric-shim` into your chaincode you'll need to provide the shim as an argument in the contructor. To ensure compatibility `fabric-shim` is set as a peer dependency in the package.json.
 
-
 ```javascript
 const shim = require('fabric-shim');
 
