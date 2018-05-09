@@ -105,7 +105,7 @@ class ChaincodeBase {
             let payload = await method.call(this, stub, this.getTransactionHelperFor(stub), ...parsedParameters);
 
             if (!Buffer.isBuffer(payload)) {
-                payload = Buffer.from(JSON.stringify(normalizePayload(payload)));
+                payload = Buffer.from(payload ? JSON.stringify(normalizePayload(payload)) : '');
             }
 
             return this.shim.success(payload);
