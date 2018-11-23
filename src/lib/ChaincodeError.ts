@@ -1,8 +1,10 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
-class ChaincodeError extends Error {
+export default class ChaincodeError extends Error {
 
-    constructor(key, data, stack) {
+    data: object
+
+    constructor(key: string, data: object, stack: string) {
         super(key);
 
         if (!_.isUndefined(stack)) {

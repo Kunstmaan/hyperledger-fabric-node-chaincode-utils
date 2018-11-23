@@ -1,11 +1,11 @@
-const log4js = require('log4js');
+import log4js, { Logger } from 'log4js';
 
 /**
  * @param {String} name
  *
  * @return a log4j logger object prefixed with the given name.
  */
-module.exports.getLogger = function(name) {
+export default function getLogger(name: string): Logger {
     const logger = log4js.getLogger(`chaincode-utils/${name}`);
 
     // set the logging level based on the environment variable

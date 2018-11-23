@@ -1,11 +1,18 @@
-const fs = require('fs');
-const path = require('path');
-const logger = require('../utils/logger').getLogger('migrations/runMigrations');
+import fs from 'fs';
+import path from 'path';
+import _ from 'lodash';
+import getLogger from './getLogger';
 
-const MIGRATION_FILE_REGEX = /^Version-([0-9]+)\.js/i;
-const MIGRATION_STATE_KEY = 'last-update-time';
+import TransactionHelper from './../lib/TransactionHelper';
+import {ChaincodeStub} from 'fabric-shim';
 
-async function runMigrations(migrationsDir, contract, stub, txHelper, args) {
+const logger = getLogger('migrations/runMigrations');
+
+export const MIGRATION_FILE_REGEX = /^Version-([0-9]+)\.js/i;
+export const MIGRATION_STATE_KEY = 'last-update-time';
+
+// @todo, args any?
+export async function runMigrations(migrationsDir: string, contract: string, stub: ChaincodeStub, txHelper: TransactionHelper, args: Array<any>): Promise<Array<string>> {
     const lastUpdateTime = await txHelper.getStateAsDate(MIGRATION_STATE_KEY);
 
     const files = await loadFiles(migrationsDir);
@@ -13,7 +20,7 @@ async function runMigrations(migrationsDir, contract, stub, txHelper, args) {
 
     if (migrationFiles.length === 0) {
 
-        return 'No migrations to execute';
+        return []; // @todo? return 'No migrations to execute';
     }
 
     for (const file of migrationFiles) {
@@ -27,13 +34,7 @@ async function runMigrations(migrationsDir, contract, stub, txHelper, args) {
     return migrationFiles;
 }
 
-module.exports = {
-    MIGRATION_STATE_KEY,
-    MIGRATION_FILE_REGEX,
-    runMigrations
-};
-
-function getMigrationFiles(files, lastUpdateTime) {
+function getMigrationFiles(files: Array<string>, lastUpdateTime: Date): Array<string> {
     const versionFiles = sortMigrationFiles(files.filter((file) => MIGRATION_FILE_REGEX.test(file)));
     const migrationsToRun = [];
     for (const versionFile of versionFiles) {
@@ -47,7 +48,8 @@ function getMigrationFiles(files, lastUpdateTime) {
     return migrationsToRun;
 }
 
-function loadFiles(migrationsDir) {
+function loadFiles(migrationsDir: string): Promise<Array<string>> {
+
     return new Promise((resolve, reject) => {
         fs.stat(migrationsDir, (statErr, stats) => {
             if (statErr || !stats.isDirectory()) {
@@ -67,19 +69,26 @@ function loadFiles(migrationsDir) {
     });
 }
 
-function getDateTime(fileName) {
+function getDateTime(fileName: string): Date {
     const timeStamp = fileName.match(MIGRATION_FILE_REGEX)[1];
     const year = timeStamp.substr(0, 4);
     // The argument month is 0-based. This means that January = 0 and December = 11
-    const month = timeStamp.substr(4, 2) - 1;
+    const month = timeStamp.substr(4, 2);
     const day = timeStamp.substr(6, 2);
     const hour = timeStamp.substr(8, 2);
     const min = timeStamp.substr(10, 2);
     const sec = timeStamp.substr(12, 2);
-    return new Date(year, month, day, hour, min, sec);
+
+    if (!_.isInteger(year) || !_.isInteger(month) || !_.isInteger(day)
+        || !_.isInteger(hour) || !_.isInteger(min) || !_.isInteger(sec)) {
+
+        throw new Error(`Cannot parse migration filename ${fileName}`);
+    }
+
+    return new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10), parseInt(hour, 10), parseInt(min, 10), parseInt(sec, 10));
 }
 
-function compare(a, b) {
+function compare(a: string, b: string): number {
     const dateA = getDateTime(a);
     const dateB = getDateTime(b);
 
@@ -92,6 +101,7 @@ function compare(a, b) {
     return 0;
 }
 
-function sortMigrationFiles(files) {
+function sortMigrationFiles(files: Array<string>): Array<string> {
+
     return files.sort(compare);
 }

@@ -1,21 +1,23 @@
-const grpc = require('grpc');
-const path = require('path');
-const _ = require('lodash');
+import grpc from 'grpc';
+import path from 'path';
+import _ from 'lodash';
 
-const ChaincodeError = require('./ChaincodeError');
+import ChaincodeError from './ChaincodeError';
+import ERRORS from './../constants/errors';
 
-const ERRORS = require('./../constants/errors');
-
-const loggerUtils = require('./../utils/logger');
-const dbUtils = require('./../utils/db');
-const identityUtils = require('./../utils/identity');
-const parseErrorMessage = require('./../utils/parseErrorMessage');
-const {toDate} = require('./../utils/timestamp');
+import getLogger from './../utils/getLogger';
+import * as dbUtils from './../utils/db';
+import * as identityUtils from './../utils/identity';
+import parseErrorMessage from './../utils/parseErrorMessage';
+import timestampToDate from './../utils/timestampToDate';
 
 const chaincodeProto = grpc.load({
     root: path.join(process.cwd(), 'node_modules/fabric-shim/lib/protos'),
     file: 'peer/chaincode.proto'
 }).protos;
+
+import { ChaincodeStub } from 'fabric-shim';
+import { Logger } from 'log4js';
 
 // Keep track of sequence number
 // This needs to be a global variable as every time a
@@ -25,11 +27,14 @@ const chaincodeProto = grpc.load({
 let cachedIdSequences = {};
 const ID_SEQUENCE_TTL = (30 * 60 * 1000);
 
-const TransactionHelper = class {
+export default class TransactionHelper {
 
-    constructor(stub) {
+    stub: ChaincodeStub
+    logger: Logger
+
+    constructor(stub: ChaincodeStub) {
         this.stub = stub;
-        this.logger = loggerUtils.getLogger('lib/TransactionHelper');
+        this.logger = getLogger('lib/TransactionHelper');
     }
 
     /**
@@ -37,7 +42,7 @@ const TransactionHelper = class {
      *
      * @param {String} prefix
      */
-    uuid(prefix) {
+    uuid(prefix: string): string {
         validateRequiredString({prefix});
 
         const txId = this.stub.getTxID();
@@ -78,7 +83,7 @@ const TransactionHelper = class {
      * @param {Array} args
      * @param {String} channel
      */
-    async invokeChaincode(chaincodeName, functionName, args = undefined, channel = undefined) {
+    async invokeChaincode(chaincodeName: string, functionName: string, args: Array<any> = undefined, channel: string = undefined): Promise<any> {
         validateRequiredString({chaincodeName});
         validateRequiredString({functionName});
 
@@ -124,6 +129,7 @@ const TransactionHelper = class {
                     } else {
                         this.logger.error(`Error while calling ${chaincodeName} with args ${args} on channel ${invokeChannel}`);
 
+                        // @todo what happens here? where does key, data, stack come from?
                         const errorData = parseErrorMessage(error.message);
                         if (_.isUndefined(errorData.key)) {
                             ccError = new ChaincodeError(ERRORS.CHAINCODE_INVOKE_ERROR, {'message': error.message}, error.stack);
@@ -146,14 +152,14 @@ const TransactionHelper = class {
      * @return true if this function is called from the chaincode and function given.
      *         if func is undefined, will ignore the function.
      */
-    invokedByChaincode(chaincodeName, functionName = undefined) {
+    invokedByChaincode(chaincodeName: string, functionName: string = undefined): boolean {
         validateRequiredString({chaincodeName});
 
         validate({functionName}, (value) => {
             return _.isUndefined(value) || _.isString(value);
         }, 'string');
 
-        const {proposal} = this.stub.getSignedProposal();
+        const proposal = this.stub.getSignedProposal().getProposalBytes();
         const input = chaincodeProto.ChaincodeInput.decode(_.clone(proposal.payload.input));
         const args = input.args.map((entry) => {
 
@@ -183,7 +189,7 @@ const TransactionHelper = class {
      *   record: [Object] <DB content for that ID>
      * }
      */
-    async getQueryResultAsList(query) {
+    async getQueryResultAsList(query: object): Promise<any> {
         validateQuery(query);
 
         const queryString = JSON.stringify(query);
@@ -197,12 +203,12 @@ const TransactionHelper = class {
     *   Deletes all objects returned by the query
     *   @param {Object} query the query
     */
-    async deleteAllReturnedByQuery(query) {
+    async deleteAllReturnedByQuery(query: object): Promise<void> {
         validateQuery(query);
 
         const allResults = await this.getQueryResultAsList(query);
 
-        return Promise.all(allResults.map((record) => this.stub.deleteState(record.key)));
+        return Promise.all(allResults.map((record) => this.stub.deleteState(record.key))).then(() => { return });
     }
 
     /**
@@ -210,7 +216,7 @@ const TransactionHelper = class {
      *
      * @param {String} key
      */
-    async putState(key, value) {
+    async putState(key, value): Promise<void> {
         validateRequiredString({key});
 
         return this.stub.putState(key, dbUtils.serialize(value));
@@ -221,7 +227,7 @@ const TransactionHelper = class {
      *
      * @return the state for the given key parsed as an Object
      */
-    async getStateAsObject(key) {
+    async getStateAsObject(key: string): Promise<any> {
         validateRequiredString({key});
 
         const rawValue = await this.stub.getState(key);
@@ -234,7 +240,7 @@ const TransactionHelper = class {
      *
      * @return the state for the given key parsed as a String
      */
-    async getStateAsString(key) {
+    async getStateAsString(key: string): Promise<string> {
         validateRequiredString({key});
 
         const rawValue = await this.stub.getState(key);
@@ -247,7 +253,7 @@ const TransactionHelper = class {
      *
      * @return the state for the given key parsed as a Date
      */
-    async getStateAsDate(key) {
+    async getStateAsDate(key: string): Promise<Date> {
         validateRequiredString({key});
 
         const rawValue = await this.stub.getState(key);
@@ -258,15 +264,18 @@ const TransactionHelper = class {
     /**
      * @return the Transaction date as a Javascript Date Object.
      */
-    getTxDate() {
+    getTxDate(): Date {
         const timestamp = this.stub.getTxTimestamp();
-        return toDate(timestamp);
+
+        return timestampToDate(timestamp);
     }
 
     /**
      * Returns the Certificate from the Transaction creator
+     *
+     * @todo fix this ... types from jrsasign
      */
-    getCreatorCertificate() {
+    getCreatorCertificate(): X509 {
 
         return identityUtils.getCertificateFromStub(this.stub);
     }
@@ -274,7 +283,7 @@ const TransactionHelper = class {
     /**
      * Returns the Public Key from the Transaction creator as a SHA3 256 Hash
      */
-    getCreatorPublicKey() {
+    getCreatorPublicKey(): string {
 
         return identityUtils.getPublicKeyHashFromStub(this.stub);
     }
@@ -285,7 +294,7 @@ const TransactionHelper = class {
      * @param {String} name
      * @param {Object} payload
      */
-    setEvent(name, payload) {
+    setEvent(name: string, payload: object): void {
         let bufferedPayload;
 
         if (Buffer.isBuffer(payload)) {
@@ -295,24 +304,23 @@ const TransactionHelper = class {
         }
 
         this.logger.debug(`Setting Event ${name} with payload ${JSON.stringify(payload)}`);
+
         return this.stub.setEvent(name, bufferedPayload);
     }
 
 };
 
-module.exports = TransactionHelper;
-
-function validateRequiredString(params) {
+function validateRequiredString(params: object) {
     return validate(params, (value) => {
         return _.isString(value) && !_.isEmpty(value);
     }, 'string');
 }
 
-function validateQuery(query) {
+function validateQuery(query: object): void {
     validate({query}, _.isObject, 'object');
 }
 
-function validate(params, validator, expected) {
+function validate(params: object, validator: Function, expected: string): void {
     for (const paramName in params) {
         if ({}.hasOwnProperty.call(params, paramName)) {
             const paramValue = params[paramName];

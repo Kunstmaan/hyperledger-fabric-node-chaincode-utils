@@ -1,9 +1,12 @@
-const _ = require('lodash'); // eslint-disable-line
-const logger = require('./logger').getLogger('utils/db');
-const normalizePayload = require('./normalizePayload');
-const {toDate: timestampToDate} = require('./timestamp');
+import _ from 'lodash'; // eslint-disable-line
+import getLogger from './getLogger';
+import normalizePayload from './normalizePayload';
+import timestampToDate from './timestampToDate';
+import {Iterators} from 'fabric-shim';
 
-const serialize = (value) => {
+const logger = getLogger('utils/db');
+
+export function serialize(value: any): Buffer {
     if (_.isDate(value) || _.isString(value)) {
 
         return Buffer.from(normalizePayload(value).toString());
@@ -12,7 +15,7 @@ const serialize = (value) => {
     return Buffer.from(JSON.stringify(normalizePayload(value)));
 };
 
-const toObject = (buffer) => {
+export function toObject(buffer: Buffer): any {
     if (buffer == null) {
 
         return undefined;
@@ -27,7 +30,7 @@ const toObject = (buffer) => {
     return JSON.parse(bufferString);
 };
 
-const toDate = (buffer) => {
+export function toDate(buffer: Buffer): Date {
     if (buffer == null) {
 
         return undefined;
@@ -47,7 +50,7 @@ const toDate = (buffer) => {
     return undefined;
 };
 
-const toString = (buffer) => {
+export function toString(buffer): string {
     if (buffer == null) {
 
         return null;
@@ -65,7 +68,7 @@ const toString = (buffer) => {
  *   @param {StateQueryIterator} iterator the query iterator
  *   @return {Array[Object]} an array with the result of the query
  */
-const iteratorToList = async function iteratorToList(iterator) {
+export async function iteratorToList(iterator: Iterators.StateQueryIterator): Promise<any> {
     const allResults = [];
     let res;
     while (res == null || !res.done) {
@@ -74,16 +77,16 @@ const iteratorToList = async function iteratorToList(iterator) {
             const jsonRes = {};
             logger.debug(res.value.value.toString('utf8'));
 
-            jsonRes.key = res.value.key;
+            jsonRes['key'] = res.value.key;
             try {
-                jsonRes.record = JSON.parse(res.value.value.toString('utf8'));
+                jsonRes['record'] = JSON.parse(res.value.value.toString('utf8'));
             } catch (err) {
                 logger.debug(err);
-                jsonRes.record = res.value.value.toString('utf8');
+                jsonRes['record'] = res.value.value.toString('utf8');
             }
 
             if (res.value.timestamp) {
-                jsonRes.lastModifiedOn = timestampToDate(res.value.timestamp);
+                jsonRes['lastModifiedOn'] = timestampToDate(res.value.timestamp);
             }
 
             allResults.push(jsonRes);
@@ -95,12 +98,4 @@ const iteratorToList = async function iteratorToList(iterator) {
     logger.info(JSON.stringify(allResults));
 
     return allResults;
-};
-
-module.exports = {
-    iteratorToList,
-    toObject,
-    toDate,
-    toString,
-    serialize
 };

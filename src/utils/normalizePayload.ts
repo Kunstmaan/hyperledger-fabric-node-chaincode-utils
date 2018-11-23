@@ -1,6 +1,7 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
-module.exports = function normalizePayload(value) {
+// @todo any, any ok?
+export default function normalizePayload(value: any): any {
     if (_.isDate(value)) {
 
         return value.getTime();
@@ -22,4 +23,4 @@ module.exports = function normalizePayload(value) {
     }
 
     return value;
-};
+}

@@ -1,14 +1,16 @@
 
-const _ = require('lodash'); // eslint-disable-line
-const {X509} = require('jsrsasign');
-const {sha3_256} = require('js-sha3'); // eslint-disable-line
+import _ from 'lodash'; // eslint-disable-line
+import {X509} from 'jsrsasign';
+import {sha3_256} from 'js-sha3'; // eslint-disable-line
 
-const logger = require('./logger').getLogger('utils/identity');
+import getLogger from './getLogger';
+import ChaincodeError from './../lib/ChaincodeError';
+import ERRORS from './../constants/errors';
+import { ChaincodeStub } from 'fabric-shim';
 
-const ChaincodeError = require('./../lib/ChaincodeError');
-const ERRORS = require('./../constants/errors');
+const logger = getLogger('utils/identity');
 
-const normalizeX509PEM = function(raw) {
+export function normalizeX509PEM(raw: string): string {
     logger.debug(`[normalizeX509]raw cert: ${raw}`);
 
     const regex = /(-----\s*BEGIN ?[^-]+?-----)([\s\S]*)(-----\s*END ?[^-]+?-----)/;
@@ -33,7 +35,7 @@ const normalizeX509PEM = function(raw) {
     return `${matches.join('\n')}\n`;
 };
 
-const getCertificateFromPEM = function(pem) {
+export function getCertificateFromPEM(pem: string): X509 {
     const normalizedPEM = normalizeX509PEM(pem);
 
     const cert = new X509();
@@ -42,12 +44,12 @@ const getCertificateFromPEM = function(pem) {
     return cert;
 };
 
-const getCertificateFromStub = function(stub) {
+export function getCertificateFromStub(stub: ChaincodeStub): X509 {
 
     return getCertificateFromPEM(getPEMFromStub(stub));
 };
 
-const getPublicKeyHashFromPEM = function(pem) {
+export function getPublicKeyHashFromPEM(pem: string): string {
     const cert = getCertificateFromPEM(pem);
     const publicKey = cert.getPublicKeyHex();
     const publicKeyHash = sha3_256(publicKey);
@@ -58,12 +60,12 @@ const getPublicKeyHashFromPEM = function(pem) {
     return publicKeyHash;
 };
 
-const getPublicKeyHashFromStub = function(stub) {
+export function getPublicKeyHashFromStub(stub: ChaincodeStub): string {
 
     return getPublicKeyHashFromPEM(getPEMFromStub(stub));
 };
 
-const validatePublicKeyHash = function(hash) {
+export function validatePublicKeyHash(hash: string): boolean {
     if (!_.isString(hash)) {
 
         return false;
@@ -84,21 +86,9 @@ const validatePublicKeyHash = function(hash) {
     return true;
 };
 
-module.exports = {
-    normalizeX509PEM,
-
-    validatePublicKeyHash,
-
-    getCertificateFromStub,
-    getCertificateFromPEM,
-
-    getPublicKeyHashFromStub,
-    getPublicKeyHashFromPEM
-};
-
-function getPEMFromStub(stub) {
+function getPEMFromStub(stub: ChaincodeStub): string {
     const signingId = stub.getCreator();
-    const idBytes = signingId.getIdBytes().toBuffer();
+    const idBytes = signingId.getIdBytes();
 
     return idBytes.toString();
 }

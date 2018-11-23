@@ -1,8 +1,9 @@
-const logger = require('./logger').getLogger('utils/fabric/parseErrorMessage');
+import getLogger from './getLogger';
 
+const logger = getLogger('utils/fabric/parseErrorMessage');
 const INVOKE_REGEX = /^.*?Calling\s+chaincode\s+Invoke\(\)\s+returned\s+error\s+response\s+(.*)\..*?$/i;
 
-module.exports = function parseErrorMessage(message) {
+export default function parseErrorMessage(message: any): any {
     try {
         if (INVOKE_REGEX.test(message)) {
             const match = message.match(INVOKE_REGEX)[1];
